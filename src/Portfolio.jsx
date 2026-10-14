@@ -5,7 +5,7 @@ const NAV_LINKS = ["Home", "Projects", "Skills", "About", "Contact"];
 const data = {
   name: "Maryam Arshad",
   initials: "MA",
-  titleHighlight: "3+ Years Experience",
+  titleHighlight: "4+ Years Experience",
   bio: "Building scalable web applications with modern technologies. Specialized in creating intuitive dashboards, real-time data systems, and secure financial platforms.",
   skills: [
     { name: "ReactJS", level: 90, icon: "⚛️" },
@@ -35,7 +35,17 @@ const data = {
       ],
       live: "https://tms-portal.mflltd.com/#/",
       github: "https://github.com/MaryamArshad950/TMS_WEBPORTAL.git",
-      images: ["/TMS.png", "/TMS_dashboard.png", "/TMS_terminals.png", "/TMS_merchants.png", "/TMS_reports.png", "/TMS_users.png", "/TMS_formsecurity.png", "/TMS_audits.png", "/TMS_cleanup.png",],
+      images: [
+        `${import.meta.env.BASE_URL}TMS.png`,
+        `${import.meta.env.BASE_URL}TMS_dashboard.png`,
+        `${import.meta.env.BASE_URL}TMS_terminals.png`,
+        `${import.meta.env.BASE_URL}TMS_merchants.png`,
+        `${import.meta.env.BASE_URL}TMS_reports.png`,
+        `${import.meta.env.BASE_URL}TMS_users.png`,
+        `${import.meta.env.BASE_URL}TMS_formsecurity.png`,
+        `${import.meta.env.BASE_URL}TMS_audits.png`,
+        `${import.meta.env.BASE_URL}TMS_cleanup.png`,
+      ],
       color: "from-blue-600 to-indigo-700",
     },
     {
@@ -54,7 +64,12 @@ const data = {
       ],
       live: "https://merchantportal.ubldigital.com/#/",
       github: "https://github.com/MaryamArshad950/MerchantPortal.git",
-      images: ["/MP.jpg", "/MP_dashboard.png", "/MP_TrxnRpt.jpg", "MP_SettleRpt.jpg"],
+      images: [
+        `${import.meta.env.BASE_URL}MP.jpg`,
+        `${import.meta.env.BASE_URL}MP_dashboard.png`,
+        `${import.meta.env.BASE_URL}MP_TrxnRpt.jpg`,
+        `${import.meta.env.BASE_URL}MP_SettleRpt.jpg`
+      ],
       color: "from-violet-600 to-blue-700",
     },
   ],
@@ -65,7 +80,9 @@ const data = {
       period: "Nov 2025 – Present",
       type: "Full-time",
       bullets: [
-        "Developed a Terminal Management System (TMS) and Merchant Portal for bank clients using React.js and .NET Core, featuring POS device provisioning, status monitoring and remote configuration, alongside merchantfacing transactional analytics, downloadable reports, and discount campaign management",
+        "Developed a Terminal Management System using React.js and .NET Core for multiple merchants, enabling POS device provisioning and remote configuration.",
+        "Developed a merchant-facing portal using React.js and .NET Core for transaction details, analytics dashboards, downloadable reports, and automated discount campaign management.",
+        "Implemented security controls for sensitive merchant and transaction data."
       ],
     },
     {
