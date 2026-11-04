@@ -184,18 +184,18 @@ function SkillBar({ skill, index }) {
   return (
     <div
       ref={ref}
-      className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+      className="bg-slate-900 rounded-2xl p-5 border border-slate-800 hover:border-slate-700 hover:shadow-lg hover:shadow-black/30 hover:-translate-y-0.5 transition-all duration-200"
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-xl">{skill.icon}</span>
-          <span className="font-semibold text-gray-800 text-sm">
+          <span className="font-semibold text-slate-200 text-sm">
             {skill.name}
           </span>
         </div>
-        <span className="text-blue-600 font-bold text-sm">{skill.level}%</span>
+        <span className="text-blue-400 font-bold text-sm">{skill.level}%</span>
       </div>
-      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full"
           style={{
@@ -223,14 +223,14 @@ function ProjectCarousel({ project, isActive, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`group text-left bg-white rounded-2xl border overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-xl w-full ${
+      className={`group text-left bg-slate-900 rounded-2xl border overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 w-full ${
         isActive
-          ? "border-blue-400 shadow-lg ring-2 ring-blue-100"
-          : "border-gray-100 shadow-sm"
+          ? "border-blue-500 shadow-lg shadow-blue-900/30 ring-2 ring-blue-500/20"
+          : "border-slate-800"
       }`}
     >
       {/* Carousel image area */}
-      <div className="relative h-56 bg-gray-100 overflow-hidden">
+      <div className="relative h-56 bg-slate-800 overflow-hidden">
         {images.map((img, i) => (
           <img
             key={i}
@@ -242,20 +242,20 @@ function ProjectCarousel({ project, isActive, onClick }) {
           />
         ))}
         {/* Dark gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
         {/* Prev / Next arrows — only show if multiple images */}
         {images.length > 1 && (
           <>
             <button
               onClick={prev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-gray-700 shadow transition-all opacity-0 group-hover:opacity-100 text-sm font-bold"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-slate-900/80 hover:bg-slate-900 rounded-full flex items-center justify-center text-slate-100 shadow transition-all opacity-0 group-hover:opacity-100 text-sm font-bold"
             >
               ‹
             </button>
             <button
               onClick={next}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-gray-700 shadow transition-all opacity-0 group-hover:opacity-100 text-sm font-bold"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-slate-900/80 hover:bg-slate-900 rounded-full flex items-center justify-center text-slate-100 shadow transition-all opacity-0 group-hover:opacity-100 text-sm font-bold"
             >
               ›
             </button>
@@ -283,7 +283,7 @@ function ProjectCarousel({ project, isActive, onClick }) {
         )}
 
         {isActive && (
-          <div className="absolute top-3 right-3 bg-white text-blue-600 text-xs font-bold px-2.5 py-1 rounded-full shadow">
+          <div className="absolute top-3 right-3 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">
             ✓ Selected
           </div>
         )}
@@ -291,15 +291,128 @@ function ProjectCarousel({ project, isActive, onClick }) {
 
       {/* Card footer */}
       <div className="p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">
+        <h3 className="text-xl font-bold text-slate-100 mb-2">
           {project.title}
         </h3>
-        <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
+        <p className="text-slate-400 text-sm leading-relaxed line-clamp-2">
           {project.description}
         </p>
       </div>
     </button>
   );
+}
+
+/* Rotating wireframe "network" sphere, drawn on a 2D canvas (no extra dependencies) */
+function WireSphere({ className = "" }) {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const golden = Math.PI * (3 - Math.sqrt(5));
+
+    const makeSphere = (count, linkDist, scale, rgb, speed) => {
+      const pts = [];
+      for (let i = 0; i < count; i++) {
+        const y = 1 - (i / (count - 1)) * 2;
+        const r = Math.sqrt(1 - y * y);
+        const t = golden * i;
+        const j = 1 + (Math.random() - 0.5) * 0.1; // slight irregularity
+        pts.push([Math.cos(t) * r * j, y * j, Math.sin(t) * r * j]);
+      }
+      const edges = [];
+      for (let i = 0; i < count; i++) {
+        for (let k = i + 1; k < count; k++) {
+          const dx = pts[i][0] - pts[k][0];
+          const dy = pts[i][1] - pts[k][1];
+          const dz = pts[i][2] - pts[k][2];
+          if (Math.sqrt(dx * dx + dy * dy + dz * dz) < linkDist)
+            edges.push([i, k]);
+        }
+      }
+      return { pts, edges, scale, rgb, speed };
+    };
+
+    const spheres = [
+      makeSphere(110, 0.55, 0.92, "96,165,250", 0.00018), // outer, blue
+      makeSphere(50, 0.85, 0.5, "167,139,250", -0.00026), // inner, violet
+    ];
+
+    let size = 0;
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      size = canvas.clientWidth;
+      canvas.width = size * dpr;
+      canvas.height = size * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const draw = (time) => {
+      ctx.clearRect(0, 0, size, size);
+      const c = size / 2;
+      const tilt = 0.35;
+      const cosB = Math.cos(tilt);
+      const sinB = Math.sin(tilt);
+
+      spheres.forEach((s) => {
+        const a = time * s.speed;
+        const cosA = Math.cos(a);
+        const sinA = Math.sin(a);
+        const R = c * s.scale;
+
+        const proj = s.pts.map(([x, y, z]) => {
+          const x1 = x * cosA + z * sinA;
+          const z1 = -x * sinA + z * cosA;
+          const y2 = y * cosB - z1 * sinB;
+          const z2 = y * sinB + z1 * cosB;
+          const p = 2.6 / (2.6 - z2);
+          return { x: c + x1 * R * p, y: c + y2 * R * p, d: (z2 + 1) / 2 };
+        });
+
+        ctx.lineWidth = 1;
+        s.edges.forEach(([i, k]) => {
+          const d = (proj[i].d + proj[k].d) / 2;
+          ctx.strokeStyle = `rgba(${s.rgb},${0.06 + d * 0.4})`;
+          ctx.beginPath();
+          ctx.moveTo(proj[i].x, proj[i].y);
+          ctx.lineTo(proj[k].x, proj[k].y);
+          ctx.stroke();
+        });
+
+        proj.forEach((p) => {
+          ctx.fillStyle = `rgba(${s.rgb},${0.25 + p.d * 0.75})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 1 + p.d * 1.8, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      });
+    };
+
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    let raf;
+    if (reduce) {
+      draw(0);
+    } else {
+      const loop = (t) => {
+        draw(t);
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+    }
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className={className} aria-hidden="true" />;
 }
 
 export default function Portfolio() {
@@ -338,19 +451,19 @@ export default function Portfolio() {
 
   return (
     <div
-      className="min-h-screen bg-white text-gray-900"
+      className="min-h-screen bg-slate-950 text-slate-100"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Inter', sans-serif; } html { scroll-behavior: smooth; }`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap'); * { font-family: 'Inter', sans-serif; } html { scroll-behavior: smooth; color-scheme: dark; background: #020617; } body { margin: 0; background: #020617; }`}</style>
 
       {/* NAV */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100" : "bg-transparent"}`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-slate-950/90 backdrop-blur-md shadow-lg shadow-black/20 border-b border-slate-800" : "bg-transparent"}`}
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <button
             onClick={() => scrollTo("home")}
-            className="text-lg font-bold text-gray-900 hover:text-blue-600 transition-colors"
+            className="text-lg font-bold text-slate-100 hover:text-blue-400 transition-colors"
           >
             {data.name}
           </button>
@@ -359,11 +472,11 @@ export default function Portfolio() {
               <li key={l}>
                 <button
                   onClick={() => scrollTo(l)}
-                  className={`relative px-4 py-2 rounded-lg text-sm cursor-pointer font-medium transition-colors ${active === l ? "text-blue-600" : "text-gray-500 hover:text-gray-900"}`}
+                  className={`relative px-4 py-2 rounded-lg text-sm cursor-pointer font-medium transition-colors ${active === l ? "text-blue-400" : "text-slate-400 hover:text-slate-100"}`}
                 >
                   {l}
                   {active === l && (
-                    <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-blue-600 rounded-full" />
+                    <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-blue-400 rounded-full" />
                   )}
                 </button>
               </li>
@@ -371,18 +484,18 @@ export default function Portfolio() {
           </ul>
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden p-2 text-gray-600"
+            className="md:hidden p-2 text-slate-300"
           >
             {menuOpen ? "✕" : "☰"}
           </button>
         </div>
         {menuOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100 px-6 py-3 flex flex-col gap-1">
+          <div className="md:hidden bg-slate-950 border-t border-slate-800 px-6 py-3 flex flex-col gap-1">
             {NAV_LINKS.map((l) => (
               <button
                 key={l}
                 onClick={() => scrollTo(l)}
-                className={`text-left px-4 py-2.5 rounded-lg text-sm font-medium ${active === l ? "text-blue-600 bg-blue-50" : "text-gray-600"}`}
+                className={`text-left px-4 py-2.5 rounded-lg text-sm font-medium ${active === l ? "text-blue-400 bg-blue-500/10" : "text-slate-400"}`}
               >
                 {l}
               </button>
@@ -394,33 +507,50 @@ export default function Portfolio() {
       {/* HERO */}
       <section
         id="home"
-        className="min-h-screen flex items-center px-6 pt-16 bg-white"
+        className="relative min-h-screen flex items-center px-6 pt-16 bg-slate-950 overflow-hidden"
       >
-        <div className="max-w-6xl mx-auto w-full py-28">
-          <div style={{ opacity: 1 }}>
-            <div className="inline-flex items-center gap-2 bg-gray-100 text-gray-600 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-gray-200">
-              <span className="text-blue-500">&lt;/&gt;</span>
+        {/* faint grid, fading out away from the sphere */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(#94a3b8 1px, transparent 1px), linear-gradient(90deg, #94a3b8 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+            WebkitMaskImage:
+              "radial-gradient(ellipse at 75% 45%, black, transparent 70%)",
+            maskImage:
+              "radial-gradient(ellipse at 75% 45%, black, transparent 70%)",
+          }}
+        />
+        {/* glow behind the sphere */}
+        <div className="pointer-events-none absolute top-1/2 -translate-y-1/2 -right-40 w-[40rem] h-[40rem] rounded-full bg-blue-600/15 blur-3xl" />
+        {/* 3D wireframe sphere */}
+        <WireSphere className="pointer-events-none absolute top-1/2 -translate-y-1/2 -right-24 lg:right-0 w-[28rem] lg:w-[42rem] aspect-square opacity-30 lg:opacity-100" />
+        <div className="relative max-w-6xl mx-auto w-full py-28">
+          <div>
+            <div className="inline-flex items-center gap-2 bg-slate-900 text-slate-300 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-slate-800">
+              <span className="text-blue-400">&lt;/&gt;</span>
               Open to Full-time & Remote Opportunities
             </div>
-            <h1 className="text-5xl md:text-6xl font-black text-gray-900 leading-[1.05] tracking-tight mb-3">
+            <h1 className="text-5xl md:text-6xl font-black text-white leading-[1.05] tracking-tight mb-3">
               Full-stack Software Engineer
             </h1>
-            <h2 className="text-5xl md:text-6xl font-black text-blue-600 leading-[1.05] tracking-tight mb-8">
+            <h2 className="text-5xl md:text-6xl font-black text-blue-500 leading-[1.05] tracking-tight mb-8">
               {data.titleHighlight}
             </h2>
-            <p className="text-gray-500 text-lg max-w-lg leading-relaxed mb-10">
+            <p className="text-slate-400 text-lg max-w-lg leading-relaxed mb-10">
               {data.bio}
             </p>
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={() => scrollTo("projects")}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-all hover:shadow-xl hover:shadow-blue-200/50 hover:-translate-y-0.5 active:scale-95"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-7 py-3.5 rounded-xl transition-all hover:shadow-xl hover:shadow-blue-900/50 hover:-translate-y-0.5 active:scale-95"
               >
                 View My Projects <span className="text-lg">→</span>
               </button>
               <button
                 onClick={() => scrollTo("contact")}
-                className="flex items-center gap-2 border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold px-7 py-3.5 rounded-xl transition-all hover:-translate-y-0.5 active:scale-95"
+                className="flex items-center gap-2 border-2 border-slate-700 hover:border-blue-500 hover:bg-blue-500/10 text-slate-200 hover:text-blue-400 font-semibold px-7 py-3.5 rounded-xl transition-all hover:-translate-y-0.5 active:scale-95"
               >
                 Get In Touch
               </button>
@@ -430,17 +560,17 @@ export default function Portfolio() {
       </section>
 
       {/* PROJECTS */}
-      <section id="projects" className="py-24 px-6 bg-gray-50">
+      <section id="projects" className="py-24 px-6 bg-slate-900/60">
         <div className="max-w-6xl mx-auto">
           <FadeIn>
             <div className="text-center mb-14">
-              <div className="inline-flex items-center gap-2 bg-white border border-gray-200 text-gray-600 text-sm font-medium px-4 py-2 rounded-full mb-5 shadow-sm">
+              <div className="inline-flex items-center gap-2 bg-slate-900 border border-slate-800 text-slate-300 text-sm font-medium px-4 py-2 rounded-full mb-5">
                 🏛️ Featured Work
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 Recent Projects
               </h2>
-              <p className="text-gray-500 text-lg">
+              <p className="text-slate-400 text-lg">
                 Explore my latest work in building enterprise-level applications
               </p>
             </div>
@@ -458,23 +588,23 @@ export default function Portfolio() {
             </div>
 
             {/* Detail panel */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
               <div className="p-8 md:p-10">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-2xl font-bold text-white mb-4">
                   {data.projects[activeProject].title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
+                <p className="text-slate-400 leading-relaxed mb-6">
                   {data.projects[activeProject].description}
                 </p>
                 <div className="mb-6">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">
                     Tech Stack
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {data.projects[activeProject].tech.map((t) => (
                       <span
                         key={t}
-                        className="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200"
+                        className="bg-slate-800 text-slate-300 text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-700"
                       >
                         {t}
                       </span>
@@ -482,16 +612,16 @@ export default function Portfolio() {
                   </div>
                 </div>
                 <div className="mb-8">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">
                     Key Features
                   </p>
                   <ul className="grid sm:grid-cols-2 gap-y-2 gap-x-4">
                     {data.projects[activeProject].features.map((f) => (
                       <li
                         key={f}
-                        className="flex items-start gap-2.5 text-sm text-gray-600"
+                        className="flex items-start gap-2.5 text-sm text-slate-400"
                       >
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-[7px] flex-shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-[7px] flex-shrink-0" />
                         {f}
                       </li>
                     ))}
@@ -502,7 +632,7 @@ export default function Portfolio() {
                     href={data.projects[activeProject].live}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-blue-200"
+                    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-blue-900/50"
                   >
                     ↗ View Live
                   </a>
@@ -510,7 +640,7 @@ export default function Portfolio() {
                     href={data.projects[activeProject].github}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-semibold text-sm px-6 py-3 rounded-xl transition-all"
+                    className="inline-flex items-center gap-2 border-2 border-slate-700 hover:border-slate-500 text-slate-200 font-semibold text-sm px-6 py-3 rounded-xl transition-all"
                   >
                     ⌥ View Code
                   </a>
@@ -520,18 +650,19 @@ export default function Portfolio() {
           </FadeIn>
         </div>
       </section>
+
       {/* SKILLS */}
-      <section id="skills" className="py-24 px-6 bg-white">
+      <section id="skills" className="py-24 px-6 bg-slate-950">
         <div className="max-w-6xl mx-auto">
           <FadeIn>
             <div className="text-center mb-14">
-              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-600 text-sm font-medium px-4 py-2 rounded-full mb-5">
+              <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium px-4 py-2 rounded-full mb-5">
                 🛠️ Technical Skills
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 Skills & Technologies
               </h2>
-              <p className="text-gray-500 text-lg max-w-xl mx-auto">
+              <p className="text-slate-400 text-lg max-w-xl mx-auto">
                 Technologies I work with to build robust enterprise applications
               </p>
             </div>
@@ -545,42 +676,42 @@ export default function Portfolio() {
       </section>
 
       {/* ABOUT */}
-      <section id="about" className="py-24 px-6 bg-gray-50">
+      <section id="about" className="py-24 px-6 bg-slate-900/60">
         <div className="max-w-6xl mx-auto">
           <FadeIn>
             <div className="text-center mb-14">
-              <div className="inline-flex items-center gap-2 bg-white border border-gray-200 text-gray-600 text-sm font-medium px-4 py-2 rounded-full mb-5 shadow-sm">
+              <div className="inline-flex items-center gap-2 bg-slate-900 border border-slate-800 text-slate-300 text-sm font-medium px-4 py-2 rounded-full mb-5">
                 👩‍💻 About Me
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 Experience & Education
               </h2>
             </div>
             {/* Work Experience — 2 per row */}
             <div className="mb-10">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-5">
                 Work Experience
               </p>
               <div className="grid md:grid-cols-2 gap-5">
                 {data.experience.map((e) => (
                   <div
                     key={e.company}
-                    className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col"
+                    className="bg-slate-900 rounded-2xl border border-slate-800 p-6 hover:border-slate-700 hover:shadow-lg hover:shadow-black/30 hover:-translate-y-0.5 transition-all duration-200 flex flex-col"
                   >
                     <div className="flex items-start justify-between gap-3 mb-4">
                       <div className="min-w-0">
-                        <h4 className="text-base font-bold text-gray-900 leading-snug">
+                        <h4 className="text-base font-bold text-slate-100 leading-snug">
                           {e.role}
                         </h4>
-                        <p className="text-blue-600 font-semibold text-sm mt-0.5">
+                        <p className="text-blue-400 font-semibold text-sm mt-0.5">
                           {e.company}
                         </p>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <span className="bg-blue-50 text-blue-600 text-xs font-semibold px-3 py-1 rounded-full border border-blue-100 whitespace-nowrap">
+                        <span className="bg-blue-500/10 text-blue-400 text-xs font-semibold px-3 py-1 rounded-full border border-blue-500/20 whitespace-nowrap">
                           {e.type}
                         </span>
-                        <p className="text-gray-400 text-xs mt-1.5 whitespace-nowrap">
+                        <p className="text-slate-500 text-xs mt-1.5 whitespace-nowrap">
                           {e.period}
                         </p>
                       </div>
@@ -589,7 +720,7 @@ export default function Portfolio() {
                       {e.bullets.map((b) => (
                         <li
                           key={b}
-                          className="flex items-start gap-2.5 text-sm text-gray-600"
+                          className="flex items-start gap-2.5 text-sm text-slate-400"
                         >
                           <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-[7px] flex-shrink-0" />
                           {b}
@@ -601,28 +732,28 @@ export default function Portfolio() {
               </div>
             </div>
 
-            {/* Education + Stats */}
+            {/* Education */}
             <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-5">
                 Education
               </p>
               <div className="grid md:grid-cols-2 gap-5">
                 {data.education.map((e) => (
                   <div
                     key={e.institution}
-                    className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex items-center gap-5"
+                    className="bg-slate-900 rounded-2xl border border-slate-800 p-6 flex items-center gap-5"
                   >
                     <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0">
                       🎓
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-900 text-base mb-0.5">
+                      <h4 className="font-bold text-slate-100 text-base mb-0.5">
                         {e.degree}
                       </h4>
-                      <p className="text-blue-600 font-semibold text-sm">
+                      <p className="text-blue-400 font-semibold text-sm">
                         {e.institution}
                       </p>
-                      <p className="text-gray-400 text-sm mt-0.5">{e.year}</p>
+                      <p className="text-slate-500 text-sm mt-0.5">{e.year}</p>
                     </div>
                   </div>
                 ))}
@@ -633,21 +764,21 @@ export default function Portfolio() {
       </section>
 
       {/* CONTACT */}
-      <section id="contact" className="py-24 px-6 bg-white">
+      <section id="contact" className="py-24 px-6 bg-slate-950">
         <div className="max-w-6xl mx-auto">
           <FadeIn>
             <div className="text-center mb-14">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                 Get In Touch
               </h2>
-              <p className="text-gray-500 text-lg max-w-xl mx-auto">
+              <p className="text-slate-400 text-lg max-w-xl mx-auto">
                 Feel free to reach out for project collaborations or general
                 inquiries.
               </p>
             </div>
             <div className="grid lg:grid-cols-2 gap-8">
-              <div className="bg-gray-50 rounded-2xl border border-gray-100 p-8">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">
+              <div className="bg-slate-900 rounded-2xl border border-slate-800 p-8">
+                <h3 className="text-xl font-bold text-white mb-6">
                   Contact Information
                 </h3>
                 <div className="space-y-5">
@@ -678,11 +809,11 @@ export default function Portfolio() {
                     },
                   ].map((c) => (
                     <div key={c.label} className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-blue-600 font-bold text-sm flex-shrink-0">
+                      <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center text-blue-400 font-bold text-sm flex-shrink-0">
                         {c.icon}
                       </div>
                       <div>
-                        <p className="text-xs text-gray-400 font-medium">
+                        <p className="text-xs text-slate-500 font-medium">
                           {c.label}
                         </p>
                         {c.href ? (
@@ -690,12 +821,12 @@ export default function Portfolio() {
                             href={c.href}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-gray-800 font-semibold text-sm hover:text-blue-600 transition-colors"
+                            className="text-slate-200 font-semibold text-sm hover:text-blue-400 transition-colors"
                           >
                             {c.value}
                           </a>
                         ) : (
-                          <p className="text-gray-800 font-semibold text-sm">
+                          <p className="text-slate-200 font-semibold text-sm">
                             {c.value}
                           </p>
                         )}
@@ -705,22 +836,22 @@ export default function Portfolio() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">
+              <div className="bg-slate-900 rounded-2xl border border-slate-800 p-8">
+                <h3 className="text-xl font-bold text-white mb-6">
                   Send a Message
                 </h3>
                 {sent ? (
                   <div className="flex flex-col items-center justify-center h-48 gap-3 text-center">
-                    <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center text-2xl">
+                    <div className="w-14 h-14 bg-green-500/10 rounded-full flex items-center justify-center text-2xl">
                       ✅
                     </div>
-                    <p className="font-semibold text-gray-900">Message sent!</p>
-                    <p className="text-gray-500 text-sm">
+                    <p className="font-semibold text-white">Message sent!</p>
+                    <p className="text-slate-400 text-sm">
                       Thanks for reaching out. I'll get back to you soon.
                     </p>
                     <button
                       onClick={() => setSent(false)}
-                      className="text-blue-600 text-sm font-medium hover:underline"
+                      className="text-blue-400 text-sm font-medium hover:underline"
                     >
                       Send another
                     </button>
@@ -748,7 +879,7 @@ export default function Portfolio() {
                       },
                     ].map((f) => (
                       <div key={f.key}>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label className="block text-sm font-medium text-slate-300 mb-1.5">
                           {f.label}
                         </label>
                         <input
@@ -758,12 +889,12 @@ export default function Portfolio() {
                           onChange={(e) =>
                             setForm({ ...form, [f.key]: e.target.value })
                           }
-                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         />
                       </div>
                     ))}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-300 mb-1.5">
                         Message
                       </label>
                       <textarea
@@ -773,13 +904,13 @@ export default function Portfolio() {
                         onChange={(e) =>
                           setForm({ ...form, message: e.target.value })
                         }
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                        className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                       />
                     </div>
                     <a
                       href={`mailto:${data.contact.email}?subject=${encodeURIComponent(form.subject || "Portfolio Inquiry")}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`)}`}
                       onClick={() => setTimeout(() => setSent(true), 300)}
-                      className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-3.5 rounded-xl text-center transition-all hover:shadow-lg hover:shadow-blue-200 active:scale-95"
+                      className="block w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm py-3.5 rounded-xl text-center transition-all hover:shadow-lg hover:shadow-blue-900/50 active:scale-95"
                     >
                       Send Message →
                     </a>
@@ -792,11 +923,11 @@ export default function Portfolio() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-gray-100 py-8 px-6 text-center">
-        <p className="text-gray-400 text-sm">
+      <footer className="border-t border-slate-800 py-8 px-6 text-center bg-slate-950">
+        <p className="text-slate-500 text-sm">
           © {new Date().getFullYear()}{" "}
-          <span className="font-semibold text-gray-600">{data.name}</span> · All
-          rights reserved.
+          <span className="font-semibold text-slate-300">{data.name}</span> ·
+          All rights reserved.
         </p>
       </footer>
     </div>
