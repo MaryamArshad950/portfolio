@@ -202,9 +202,9 @@ function SkillBar({ skill, index }) {
             {skill.name}
           </span>
         </div>
-        <span className="text-blue-400 font-bold text-sm">{skill.level}%</span>
+        {/* <span className="text-blue-400 font-bold text-sm">{skill.level}%</span> */}
       </div>
-      <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+      {/* <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full"
           style={{
@@ -212,7 +212,7 @@ function SkillBar({ skill, index }) {
             transition: `width 1s ease ${index * 80}ms`,
           }}
         />
-      </div>
+      </div> */}
     </div>
   );
 }
@@ -580,10 +580,10 @@ export default function Portfolio() {
         />
         <div className="relative max-w-6xl mx-auto w-full py-28">
           <div>
-            <div className="inline-flex items-center gap-2 bg-slate-900 text-slate-300 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-slate-800">
+            {/*<div className="inline-flex items-center gap-2 bg-slate-900 text-slate-300 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-slate-800">
               <span className="text-blue-400">&lt;/&gt;</span>
               Open to Full-time & Remote Opportunities
-            </div>
+            </div>*/}
             <h1 className="text-5xl md:text-6xl font-black text-white leading-[1.05] tracking-tight mb-3">
               Full-stack Software Engineer
             </h1>
