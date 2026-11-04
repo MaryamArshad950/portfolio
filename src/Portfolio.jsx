@@ -5,6 +5,11 @@ const NAV_LINKS = ["Home", "Projects", "Skills", "About", "Contact"];
 // brand logos from Simple Icons: si(slug, hexColor)
 const si = (slug, color) => `https://cdn.simpleicons.org/${slug}/${color}`;
 
+// SQL Server's logo was removed from Simple Icons, so use a local database icon
+const SQL_ICON = `data:image/svg+xml,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24' fill='none' stroke='#E04B4B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><ellipse cx='12' cy='5' rx='8' ry='3'/><path d='M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5'/><path d='M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3'/></svg>",
+)}`;
+
 const data = {
   name: "Maryam Arshad",
   initials: "MA",
@@ -17,7 +22,7 @@ const data = {
     { name: "TypeScript", level: 88, icon: si("typescript", "3178C6") },
     { name: "Tailwind CSS", level: 90, icon: si("tailwindcss", "06B6D4") },
     { name: "ASP.NET Core", level: 85, icon: si("dotnet", "7B5CFF") },
-    { name: "SQL Server", level: 85, icon: si("microsoftsqlserver", "E04B4B") },
+    { name: "SQL Server", level: 85, icon: SQL_ICON },
     { name: "REST APIs", level: 85, icon: si("swagger", "85EA2D") },
     { name: "JWT Auth", level: 80, icon: si("jsonwebtokens", "D63AFF") },
   ],
