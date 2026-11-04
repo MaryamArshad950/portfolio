@@ -2,20 +2,24 @@ import { useState, useEffect, useRef } from "react";
 
 const NAV_LINKS = ["Home", "Projects", "Skills", "About", "Contact"];
 
+// brand logos from Simple Icons: si(slug, hexColor)
+const si = (slug, color) => `https://cdn.simpleicons.org/${slug}/${color}`;
+
 const data = {
   name: "Maryam Arshad",
   initials: "MA",
   titleHighlight: "4+ Years Experience",
   bio: "Building scalable web applications with modern technologies. Specialized in creating intuitive dashboards, real-time data systems, and secure financial platforms.",
   skills: [
-    { name: "ASP.NET Core", level: 85, icon: "🔷" },
-    { name: "React.Js", level: 90, icon: "⚛️" },
-    { name: "Next.Js", level: 75, icon: "🅝" },
-    { name: "SQL Server", level: 85, icon: "🗄️" },
-    { name: "JavaScript", level: 88, icon: "🟨" },
-    { name: "TypeScript", level: 88, icon: "🟦" },
-    { name: "REST APIs", level: 85, icon: "🔷" },
-    { name: "JWT Auth", level: 80, icon: "🔐" },
+    { name: "React.Js", level: 90, icon: si("react", "61DAFB") },
+    { name: "Next.Js", level: 75, icon: si("nextdotjs", "FFFFFF") },
+    { name: "JavaScript", level: 88, icon: si("javascript", "F7DF1E") },
+    { name: "TypeScript", level: 88, icon: si("typescript", "3178C6") },
+    { name: "Tailwind CSS", level: 90, icon: si("tailwindcss", "06B6D4") },
+    { name: "ASP.NET Core", level: 85, icon: si("dotnet", "7B5CFF") },
+    { name: "SQL Server", level: 85, icon: si("microsoftsqlserver", "E04B4B") },
+    { name: "REST APIs", level: 85, icon: si("swagger", "85EA2D") },
+    { name: "JWT Auth", level: 80, icon: si("jsonwebtokens", "D63AFF") },
   ],
   projects: [
     {
@@ -188,7 +192,7 @@ function SkillBar({ skill, index }) {
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-xl">{skill.icon}</span>
+          <img src={skill.icon} alt="" className="w-6 h-6 object-contain" />
           <span className="font-semibold text-slate-200 text-sm">
             {skill.name}
           </span>
@@ -303,7 +307,9 @@ function ProjectCarousel({ project, isActive, onClick }) {
 }
 
 /* Rotating wireframe "network" sphere, drawn on a 2D canvas (no extra dependencies) */
-function WireSphere({ className = "" }) {
+const SKILL_ICONS = data.skills.map((s) => s.icon);
+
+function WireSphere({ className = "", icons = [] }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -333,6 +339,16 @@ function WireSphere({ className = "" }) {
       return { pts, edges, scale, rgb, speed };
     };
 
+    // spread the skill icons evenly over the outer sphere's points
+    const imgs = icons.map((src) => {
+      const im = new Image();
+      im.src = src;
+      return im;
+    });
+    const iconIdx = icons.map((_, k) =>
+      Math.floor(((k + 0.5) * 110) / icons.length),
+    );
+
     const spheres = [
       makeSphere(110, 0.55, 0.92, "96,165,250", 0.00018), // outer, blue
       makeSphere(50, 0.85, 0.5, "167,139,250", -0.00026), // inner, violet
@@ -349,6 +365,7 @@ function WireSphere({ className = "" }) {
 
     const draw = (time) => {
       ctx.clearRect(0, 0, size, size);
+      let outerProj = null;
       const c = size / 2;
       const tilt = 0.35;
       const cosB = Math.cos(tilt);
@@ -385,7 +402,34 @@ function WireSphere({ className = "" }) {
           ctx.arc(p.x, p.y, 1 + p.d * 1.8, 0, Math.PI * 2);
           ctx.fill();
         });
+
+        if (!outerProj) outerProj = proj;
       });
+
+      // skill icons, riding on the outer sphere (back ones are smaller and dimmer)
+      iconIdx
+        .map((pi, k) => ({ p: outerProj[pi], img: imgs[k] }))
+        .sort((a, b) => a.p.d - b.p.d)
+        .forEach(({ p, img }) => {
+          const fs = 13 + p.d * 15;
+          ctx.globalAlpha = 0.3 + p.d * 0.7;
+          ctx.fillStyle = "rgba(15,23,42,0.9)";
+          ctx.strokeStyle = "rgba(96,165,250,0.5)";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, fs * 0.85, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          if (img.complete) {
+            try {
+              const w = fs * 1.1;
+              ctx.drawImage(img, p.x - w / 2, p.y - w / 2, w, w);
+            } catch (e) {
+              /* image not drawable yet */
+            }
+          }
+        });
+      ctx.globalAlpha = 1;
     };
 
     resize();
@@ -410,7 +454,7 @@ function WireSphere({ className = "" }) {
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, []);
+  }, [icons]);
 
   return <canvas ref={canvasRef} className={className} aria-hidden="true" />;
 }
@@ -525,7 +569,10 @@ export default function Portfolio() {
         {/* glow behind the sphere */}
         <div className="pointer-events-none absolute top-1/2 -translate-y-1/2 -right-40 w-[40rem] h-[40rem] rounded-full bg-blue-600/15 blur-3xl" />
         {/* 3D wireframe sphere */}
-        <WireSphere className="pointer-events-none absolute top-1/2 -translate-y-1/2 -right-24 lg:right-0 w-[28rem] lg:w-[42rem] aspect-square opacity-30 lg:opacity-100" />
+        <WireSphere
+          icons={SKILL_ICONS}
+          className="pointer-events-none absolute top-1/2 -translate-y-1/2 -right-24 lg:right-0 w-[28rem] lg:w-[42rem] aspect-square opacity-30 lg:opacity-100"
+        />
         <div className="relative max-w-6xl mx-auto w-full py-28">
           <div>
             <div className="inline-flex items-center gap-2 bg-slate-900 text-slate-300 text-xs font-semibold px-4 py-2 rounded-full mb-8 border border-slate-800">
@@ -667,7 +714,7 @@ export default function Portfolio() {
               </p>
             </div>
           </FadeIn>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {data.skills.map((s, i) => (
               <SkillBar key={s.name} skill={s} index={i} />
             ))}
