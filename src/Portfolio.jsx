@@ -5,7 +5,6 @@ const NAV_LINKS = ["Home", "Projects", "Skills", "About", "Contact"];
 // brand logos from Simple Icons: si(slug, hexColor)
 const si = (slug, color) => `https://cdn.simpleicons.org/${slug}/${color}`;
 
-// SQL Server's logo was removed from Simple Icons, so use a local database icon
 const SQL_ICON = `data:image/svg+xml,${encodeURIComponent(
   "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24' fill='none' stroke='#E04B4B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><ellipse cx='12' cy='5' rx='8' ry='3'/><path d='M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5'/><path d='M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3'/></svg>",
 )}`;
@@ -27,6 +26,35 @@ const data = {
     { name: "JWT Auth", level: 80, icon: si("jsonwebtokens", "D63AFF") },
   ],
   projects: [
+    {
+      title: "4lads Properties",
+      description:
+        "A modern, responsive website for a real estate agency, built to showcase its property listings and its track record of completed sales. Visitors can search and filter properties by type, area and price, browse photo and video galleries, and contact the agency through WhatsApp, phone or a call-back form. Listings are stored in a PostgreSQL database, so they can be updated without changing the code.",
+      tech: [
+        "Next.js",
+        "React",
+        "Tailwind CSS",
+        "Framer Motion",
+        "Prisma",
+        "PostgreSQL(Supabase)",
+        "Vercel",
+      ],
+      features: [
+        "Results-first homepage: a hero with a property search bar, animated counters for key numbers (properties sold, total sales value, years of experience), and a “Recently Sold” section that serves as proof of results.",
+        "Search and filtering: listings can be filtered by purpose (buy, rent, sold), property type, area and price, and the filters live in the URL, so a filtered page can be shared as a link.",
+        "Property pages: an image gallery with thumbnails, a video tab, specifications, features, and WhatsApp and call buttons that mention the property by name.",
+        "Polished interface: scroll-triggered animations, a responsive layout with a mobile menu.",
+        "Database-driven content: listings, team members and testimonials are loaded from PostgreSQL through Prisma, with seed data for development.",
+      ],
+      live: "https://4lads-properties.vercel.app/",
+      github: "https://github.com/MaryamArshad950/4ladsproperties.git",
+      images: [
+        `${import.meta.env.BASE_URL}4lads-hero.png`,
+        `${import.meta.env.BASE_URL}4lads-listings.png`,
+        `${import.meta.env.BASE_URL}4lads-property.png`,
+      ],
+      color: "from-blue-600 to-indigo-700",
+    },
     {
       title: "Terminal Management System",
       description:
